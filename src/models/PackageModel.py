@@ -1,4 +1,3 @@
-
 from pydantic import Field, validator
 from typing import List, Optional, Union, Literal
 from sdks.novavision.src.base.model import Package, Image, Inputs, Configs, Outputs, Response, Request, Output, Input, Config
@@ -37,7 +36,6 @@ class OutputImage(Output):
     class Config:
         title = "Image"
 
-
 class KeepSideFalse(Config):
     name: Literal["False"] = "False"
     value: Literal[False] = False
@@ -70,7 +68,6 @@ class KeepSideBBox(Config):
     class Config:
         title = "Keep Sides"
 
-
 class Degree(Config):
     """
         Positive angles specify counterclockwise rotation while negative angles indicate clockwise rotation.
@@ -79,42 +76,37 @@ class Degree(Config):
     value: int = Field(ge=-359.0, le=359.0,default=0)
     type: Literal["number"] = "number"
     field: Literal["textInput"] = "textInput"
-    placeHolder: Literal["[-359, 359]"] = "[-359, 359]"
 
     class Config:
-        title = "Angle"
+        title = "Degree"
 
-
-class PackageInputs(Inputs):
+class GrayExampleExecutorInputs(Inputs):
     inputImage: InputImage
 
-
-class PackageConfigs(Configs):
+class GrayExampleExecutorConfigs(Configs):
     degree: Degree
     drawBBox: KeepSideBBox
 
 
-class PackageOutputs(Outputs):
-    outputImage: OutputImage
-
-
-class PackageRequest(Request):
-    inputs: Optional[PackageInputs]
-    configs: PackageConfigs
+class GrayExampleExecutorRequest(Request):
+    inputs: Optional[GrayExampleExecutorInputs]
+    configs: GrayExampleExecutorConfigs
 
     class Config:
         json_schema_extra = {
             "target": "configs"
         }
 
+class GrayExampleExecutorOutputs(Outputs):
+    outputImage: OutputImage
 
-class PackageResponse(Response):
-    outputs: PackageOutputs
 
+class GrayExampleExecutorResponse(Response):
+    outputs: GrayExampleExecutorOutputs
 
-class PackageExecutor(Config):
-    name: Literal["Package"] = "Package"
-    value: Union[PackageRequest, PackageResponse]
+class GrayExampleExecutor(Config):
+    name: Literal["GrayExampleExecutor"] = "GrayExampleExecutor"
+    value: Union[GrayExampleExecutorRequest, GrayExampleExecutorResponse]
     type: Literal["object"] = "object"
     field: Literal["option"] = "option"
 
@@ -126,10 +118,9 @@ class PackageExecutor(Config):
             }
         }
 
-
 class ConfigExecutor(Config):
     name: Literal["ConfigExecutor"] = "ConfigExecutor"
-    value: Union[PackageExecutor]
+    value: Union[GrayExampleExecutor]
     type: Literal["executor"] = "executor"
     field: Literal["dependentDropdownlist"] = "dependentDropdownlist"
 
@@ -139,10 +130,8 @@ class ConfigExecutor(Config):
             "target": "value"
         }
 
-
 class PackageConfigs(Configs):
     executor: ConfigExecutor
-
 
 class PackageModel(Package):
     configs: PackageConfigs
